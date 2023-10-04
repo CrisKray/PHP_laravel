@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\User;
+class UserController extends Controller
+{
+     public function themMoi()
+    {
+        # Lấy danh sách user
+        $dsUser = User::all();
+
+        return view('tai-khoan.them-moi',compact('dsUser'));
+    }
+
+    public function xuLyThemMoi(Request $request)
+    {
+        $taiKhoan = new User();
+        $taiKhoan->ten      = $request->ten;
+        $taiKhoan->email        = $request->email;
+        $taiKhoan->password    = $request->password;
+        $taiKhoan->dienthoai   = $request->dienthoai;
+        $taiKhoan->save();
+        return redirect()->route('tai-khoan.danh-sach')->with(['thong_bao'=>"Them moi thanh cong"]);
+    }
+
+    public function danhSach()
+    {
+        $userLogin=session()->get('user_login');
+        if (empty($userLogin)){
+            return redirect()->route('dang-nhap.dang-nhap');
+        }
+        // Lay toan bo danh sach sinh vien
+        $dsUser = User::all();
+        return view("Tai-khoan.danh-sach",compact('dsUser') );
+    }
+
+    public function capNhat($id)
+    {
+        // Lay thong tin sinh vien theo id
+        $taiKhoan = User::find($id);
+        if (empty($taiKhoan)) {
+            return "Tài khoản không tồn tại!";
+        }
+
+        return view('Tai-khoan.cap-nhat', compact('dsUser'));
+    }
+
+    public function xuLyCapNhat(Request $request, $id)
+    {
+        // Lay thong tin nguoi dung theo id
+        $taiKhoan = User::find($id);
+        if (empty($taiKhoan)) {
+        return redirect()->route('tai-khoan.danh-sach')->with(['thong_bao'=>"Them moi thanh cong"]);
+        }
+        
+        $taiKhoan->ten      = $request->ten;
+        $taiKhoan->email        = $request->email;
+        $taiKhoan->password    = $request->password;
+        $taiKhoan->dienthoai   = $request->dienthoai;
+        $taiKhoan->save();
+
+        return redirect()->route('tai-khoan.danh-sach')->with(['thong_bao'=>"Them moi thanh cong"]);
+    }
+
+    public function xoa($id)
+    {
+        // Lay thong tin sinh vien theo id
+        $taiKhoan = User::find($id);
+        if (empty($taiKhoan)) {
+            return "Tài khoản không tồn tại";
+        }
+        
+        $taiKhoan->delete();
+
+        return redirect()->route('tai-khoan.danh-sach')->with(['thong_bao'=>"Them moi thanh cong"]);
+    }
+    
+}
