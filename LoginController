@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Login;
+class LoginController extends Controller
+{
+    public function dangNhap()
+    {
+        return view('dang-nhap.dang-nhap');
+    }
+    public function xulyDangNhap(Request $rq)
+    {
+        $login = Login::where('ten_dang_nhap',$rq->ten_dang_nhap)->where('mat_khau',$rq->mat_khau)->first();
+        if(empty($login))
+        {
+            return view('dang-nhap.dang-nhap');
+        }
+        session(['login_login'=>$login]);
+        return redirect()->route('dang-nhap.home');
+    }
+    public function dangXuat()
+    {
+        session()->forget('login_login');
+        return redirect()->route('dang-nhap.dang-nhap');
+    }
+
+}
